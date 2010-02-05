@@ -88,7 +88,11 @@ $.TokenList = function (input, settings) {
         })
         .focus(function () {
             if (settings.tokenLimit == null || settings.tokenLimit != token_count) {
-                show_dropdown_hint();
+                if ($(this).val){
+                    setTimeout(function(){do_search(true);}, 5);
+                } else {
+                    show_dropdown_hint();
+                }
             }
         })
         .blur(function () {
