@@ -24,7 +24,8 @@ $.fn.tokenInput = function (url, options) {
         method: "GET",
         contentType: "json",
         queryParam: "q",
-        onResult: null
+        onResult: null,
+        onTokenAdded: null
     }, options);
 
     settings.classes = $.extend({
@@ -358,6 +359,10 @@ $.TokenList = function (input, settings) {
         hidden_input.val(hidden_input.val() + id_string);
         
         token_count++;
+
+        if($.isFunction(settings.onTokenAdded)) {
+            settings.onTokenAdded(this_token, li_data, token_count);
+        }
         
         if(settings.tokenLimit != null && token_count >= settings.tokenLimit) {
             input_box.hide();
