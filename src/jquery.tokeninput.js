@@ -11,6 +11,7 @@
 (function($) {
 
 $.fn.tokenInput = function (url, options) {
+    options = options || {};
     var settings = $.extend({
         url: url,
         hintText: "Type in a search term",
@@ -42,7 +43,13 @@ $.fn.tokenInput = function (url, options) {
     }, options.classes);
 
     return this.each(function () {
-        var list = new $.TokenList(this, settings);
+        var tokenList = $(this).data('tokenlist');
+        if (tokenList) {
+            tokenList[url](options);
+        } else {
+            var list = new $.TokenList(this, settings);
+            $(this).data('tokenlist', list);
+        }
     });
 };
 
@@ -412,7 +419,9 @@ $.TokenList = function (input, settings) {
     }
 
     // Delete a token from the token list
-    function delete_token (token) {
+    function delete_token (token, dont_focus) {
+        dont_focus = (typeof(dont_focus) == 'undefined') ?  false : true;
+
         // Remove the id from the saved list
         var token_data = $.data(token.get(0), "tokeninput");
 
@@ -421,7 +430,9 @@ $.TokenList = function (input, settings) {
         selected_token = null;
 
         // Show the input box and give it focus again
-        input_box.focus();
+        if (!dont_focus) {
+            input_box.focus();
+        }
 
         // Delete this token's id from hidden input
         var str = hidden_input.val();
@@ -440,8 +451,7 @@ $.TokenList = function (input, settings) {
         if (settings.tokenLimit != null) {
             input_box
                 .show()
-                .val("")
-                .focus();
+                .val("");
         }
     }
 
@@ -574,6 +584,16 @@ $.TokenList = function (input, settings) {
 		        $.get(settings.url + queryStringDelimiter + settings.queryParam + "=" + query, {}, callback, settings.contentType);
 		    }
         }
+    }
+
+    // Clears the token input
+    this.clear = function() {
+
+        input_token.nextAll().add(input_token.prevAll()).each(function() {
+            delete_token($(this), true);
+        });
+        // Force bluring the control, so plugins like labelify could show the label message.
+        input_token.children('input').not(':selected').blur();
     }
 };
 
