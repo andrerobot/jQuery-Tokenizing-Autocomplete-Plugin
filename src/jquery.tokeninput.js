@@ -353,6 +353,8 @@ $.TokenList = function (input, settings) {
         var li_data = $.data(item.get(0), "tokeninput");
         var this_token = insert_token(li_data.id, li_data.name);
 
+        token_count++;
+        
         // Clear input box and make sure it keeps focus
         input_box
             .val("")
@@ -365,7 +367,6 @@ $.TokenList = function (input, settings) {
         var id_string = li_data.id + settings.tokenSeparator;
         hidden_input.val(hidden_input.val() + id_string);
         
-        token_count++;
 
         if($.isFunction(settings.onTokenAdded)) {
             settings.onTokenAdded(this_token, li_data, token_count);
